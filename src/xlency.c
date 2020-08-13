@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
-	printf("Excel software! Yay!\n");
 	return 0;
 }
 	
