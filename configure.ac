@@ -13,6 +13,7 @@ AC_CONFIG_FILES([
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 
 # Checks for libraries.
 PKG_CHECK_MODULES([XML], [libxml-2.0])
