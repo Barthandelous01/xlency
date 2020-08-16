@@ -36,7 +36,7 @@ OPTIONS:\n\
 char *start = "A1";
 char *end = "C3";
 int xml = 0;
-char *outfile = "a.csv";
+char *outfile = "stdout";
 char *file = "a.xlsx";
 
 /* main */
@@ -59,6 +59,27 @@ int main(int argc, char **argv)
 				break;
 			case 'h':
 				usage();
+				break;
+			case 's':
+				start = optarg;
+				break;
+			case 'e':
+				end = optarg;
+				break;
+			case 'o':
+				outfile = optarg;
+				break;
+			case 'f':
+				file = optarg;
+				break;
+			case 'x':
+				xml = 1;
+				break;
+			case ':':
+				fprintf(stderr, "%s", "Argument requires option.");
+				break;
+			default:
+				fprintf(stderr, "%s", "Unknown argument\n");
 				break;
 		}
 	}
