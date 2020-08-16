@@ -2,13 +2,7 @@
 #include <string>
 #include <cmath>
 #include <bits/stdc++.h>
-
-extern "C" char **sequence (char *start, char *end)
-{
-    char **x;
-    return x;
-}
-
+#include <vector>
 
 /*
  * These are, admittedly, some of the ugliest functions I've ever needed
@@ -207,7 +201,7 @@ static int row_to_int(char *col)
     return res;
 }
 
-static const char *int_to_row (int column)
+static char *int_to_row (int column)
 {
     std::string ret = "";
     if (column <= 26) {
@@ -225,5 +219,14 @@ static const char *int_to_row (int column)
         ret += back_to_char (std::floor((column - std::floor(column / 676) * 676) / 26));
         ret += back_to_char(column % 26);
     }
-    return ret.c_str();
+    return const_cast<char *>(ret.c_str());
+}
+
+extern "C" char **sequence (char *start, char *end)
+{
+    std::vector<char *> x;
+    for(int y = row_to_int(start); y <= row_to_int(end); y++) {
+        x.push_back(int_to_row(y));
+    }
+    return &x[0];
 }
