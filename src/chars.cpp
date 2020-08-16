@@ -1,5 +1,7 @@
 #include <cstring>
 #include <string>
+#include <cmath>
+#include <bits/stdc++.h>
 
 extern "C" char **sequence (char *start, char *end)
 {
@@ -11,7 +13,9 @@ extern "C" char **sequence (char *start, char *end)
 /*
  * These are, admittedly, some of the ugliest functions I've ever needed
  * to write. However, they are necessary. No functions existed for the
- * specific conversions required  for Excel coordinate parsing
+ * specific conversions required  for Excel coordinate parsing. Unfortunately,
+ * this specific "caps only to int and back" doesn't translate well into
+ * ASCII, and there isn't an obvious pattern.
  */
 
 static char back_to_char(int n)
@@ -187,15 +191,39 @@ static int char_to_value(char n)
     }
 }
 
-static int row_to_int(char *column)
+static int row_to_int(char *col)
 {
-    int x;
-    int len = std::strlen(column);
+    std::string column = col;
+    std::reverse(column.begin(), column.end());
+    int x = 0;
+    int len = column.length();
     int res = 0;
 
-    for (x = 0; x <= len; ++x) {
-        res += (char_to_value(column[x]) * (26 * x));
+    for (x = 0; x < len; x++) {
+        /* The other big black-magic code line */
+        res += (char_to_value(column[x]) * ((x == 0) ? 1 : (std::pow(26, x))));
     }
 
     return res;
+}
+
+static const char *int_to_row (int column)
+{
+    std::string ret = "";
+    if (column <= 26) {
+        ret += back_to_char(column);
+    } else if (column <= 676) {
+        ret += back_to_char(std::floor(column / 26));
+        ret += back_to_char(column % 26);
+    } else {
+        /*
+         * This is some of the more black-magic code in this file.
+         * It's basically just a clever use of floor to deal with rounding and
+         * remainders.
+         */
+        ret += back_to_char(std::floor(column / 676));
+        ret += back_to_char (std::floor((column - std::floor(column / 676) * 676) / 26));
+        ret += back_to_char(column % 26);
+    }
+    return ret.c_str();
 }
