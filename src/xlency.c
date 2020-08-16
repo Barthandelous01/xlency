@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <zip.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include <config.h>
@@ -39,6 +40,8 @@ int xml = 0;
 char *outfile = "stdout";
 char *file = "a.xlsx";
 
+zip_t *archive;
+
 /* main */
 int main(int argc, char **argv)
 {
@@ -71,6 +74,11 @@ int main(int argc, char **argv)
 				break;
 			case 'f':
 				file = optarg;
+				int errp = 0;
+				archive = zip_open(file, ZIP_RDONLY, &errp);
+				if (errp != 0) {
+					fprintf(stderr, "%s%s: error code [%d]", "Unable to open file ", file, errp);
+				} exit(-1);
 				break;
 			case 'x':
 				xml = 1;
