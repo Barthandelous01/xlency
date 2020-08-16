@@ -58,6 +58,7 @@ coord_t *parse_coord (char *name)
     } else {
         fatal ("Unable to allocate memory in parse_coord");
     }
+    free(match);
     regfree(&preg);
     return x;
 }
@@ -71,12 +72,3 @@ int *range_int (size_t start, size_t end)
     }
     return ret;
 }
-
-
-#ifdef TESTING
-int main()
-{
-    coord_t *x = parse_coord("A5");
-    printf("%s:%d\n", x->x, x->y);
-}
-#endif // TESTING

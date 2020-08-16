@@ -9,7 +9,7 @@
  * to write. However, they are necessary. No functions existed for the
  * specific conversions required  for Excel coordinate parsing. Unfortunately,
  * this specific "caps only to int and back" doesn't translate well into
- * ASCII, and there isn't an obvious pattern.
+ * ASCII, and there isn't an obvious pattern. Giant switch statements it is!
  */
 
 static char back_to_char(int n)
@@ -194,7 +194,6 @@ static int row_to_int(char *col)
     int res = 0;
 
     for (x = 0; x < len; x++) {
-        /* The other big black-magic code line */
         res += (char_to_value(column[x]) * ((x == 0) ? 1 : (std::pow(26, x))));
     }
 
@@ -210,11 +209,7 @@ static char *int_to_row (int column)
         ret += back_to_char(std::floor(column / 26));
         ret += back_to_char(column % 26);
     } else {
-        /*
-         * This is some of the more black-magic code in this file.
-         * It's basically just a clever use of floor to deal with rounding and
-         * remainders.
-         */
+        /* three is the max for excel spreadsheets */
         ret += back_to_char(std::floor(column / 676));
         ret += back_to_char (std::floor((column - std::floor(column / 676) * 676) / 26));
         ret += back_to_char(column % 26);

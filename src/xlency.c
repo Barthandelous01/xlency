@@ -33,15 +33,6 @@ OPTIONS:\n\
 	exit(0);
 }
 
-/* Global settings */
-char *start = "A1";
-char *end = "C3";
-int xml = 0;
-char *outfile = "stdout";
-char *file = "a.xlsx";
-
-zip_t *archive;
-
 /* main */
 int main(int argc, char **argv)
 {
@@ -52,10 +43,22 @@ int main(int argc, char **argv)
 	{"file", required_argument, NULL, 'f'},
 	{"outfile", required_argument, NULL, 'o'},
 	{"start", required_argument, NULL, 's'},
-	{"end", required_argument, NULL, 'e'}
+	{"end", required_argument, NULL, 'e'},
+	{"sheet", required_argument, NULL, 'S'}
 };
+
+	/* local pseudo-global variables */
+	char *start = "A1";
+	char *sheet = "Sheet1";
+	char *end = "C3";
+	int xml = 0;
+	char *outfile = "stdout";
+	int errp = 0;
+	zip_t *archive;
+
+	/* arg parsing */
 	int ch = 0;
-	while ((ch = getopt_long(argc, argv, "Vhxr:o:s:e:", longopts, NULL)) != -1) {
+	while ((ch = getopt_long(argc, argv, "VShxr:o:s:e:", longopts, NULL)) != -1) {
 		switch (ch) {
 			case 'V':
 				version();
@@ -73,15 +76,17 @@ int main(int argc, char **argv)
 				outfile = optarg;
 				break;
 			case 'f':
-				file = optarg;
-				int errp = 0;
-				archive = zip_open(file, ZIP_RDONLY, &errp);
+				archive = zip_open(optarg, ZIP_RDONLY, &errp);
 				if (errp != 0) {
-					fprintf(stderr, "%s%s: error code [%d]", "Unable to open file ", file, errp);
+					fprintf(stderr, "%s%s: error code %d\n",
+							"Unable to open file ", optarg, errp);
 				} exit(-1);
 				break;
 			case 'x':
 				xml = 1;
+				break;
+			case 'S':
+				sheet = optarg;
 				break;
 			case ':':
 				fprintf(stderr, "%s", "Argument requires option.");

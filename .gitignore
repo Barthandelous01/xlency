@@ -19,6 +19,7 @@ missing
 /m4/
 /stamp-h?
 .dirstamp
+/temp
 
 # build fragments
 *.o
@@ -37,6 +38,7 @@ src/test.txt
 src/out.txt
 src/redocx
 *.txt
+Book2.xlsx
 
 # MacOS Formatting files
 .DS_Store
