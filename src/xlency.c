@@ -27,7 +27,6 @@ USAGE:\n\
 OPTIONS:\n\
     -V, --version       Print the version of the software ane exit\n\
     -h, --help          Print this message and exit\n\
-    -x, --xml           Leave temp XML files in current directory\n\
     -f, --file          Input Excel file\n\
     -o, --outfile       Output `csv` file\n\
     -s, --start         Start coordinate for the Excel file\n\
@@ -53,7 +52,6 @@ int main(int argc, char **argv)
 	char *start = "A1";
 	char *sheet = "Sheet1";
 	char *end = "C3";
-	int xml = 0;
 	char *outfile = "stdout";
 	int errp = 0;
 	zip_t *archive;
@@ -61,7 +59,7 @@ int main(int argc, char **argv)
 
 	/* arg parsing */
 	int ch = 0;
-	while ((ch = getopt_long(argc, argv, "VShxr:o:s:e:f:", longopts, NULL)) != -1) {
+	while ((ch = getopt_long(argc, argv, "VS:hr:o:s:e:f:", longopts, NULL)) != -1) {
 		switch (ch) {
 			case 'V':
 				version();
@@ -75,6 +73,9 @@ int main(int argc, char **argv)
 			case 'e':
 				end = optarg;
 				break;
+			case 'S':
+				sheet = optarg;
+				break;
 			case 'o':
 				outfile = optarg;
 				break;
@@ -86,12 +87,6 @@ int main(int argc, char **argv)
 					exit(-1);
 				}
 				table = string_table(archive);
-				break;
-			case 'x':
-				xml = 1;
-				break;
-			case 'S':
-				sheet = optarg;
 				break;
 			case ':':
 				fprintf(stderr, "%s", "Argument requires option.");

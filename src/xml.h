@@ -8,6 +8,7 @@ extern "C" {
 #include <zip.h>
 
 char **string_table(zip_t *archive);
+char *sheet_file(zip_t *archive, char *sheet_name);
 
 #ifdef __cplusplus
 }
