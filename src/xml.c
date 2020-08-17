@@ -2,6 +2,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 
@@ -32,8 +33,18 @@ char **string_table(zip_t *archive)
     root = xmlDocGetRootElement(doc);
 
     /* start of allocating for string table */
-    int count = atoi(root->properties->next->children->content);
+    int count = atoi(root->properties->children->content);
     char **table = malloc(sizeof(char *) * count);
+
+    int index = 0;
+    char *temp;
+    for (node1 = root->children; node1 != NULL; node1 = node1->next) {
+        temp = node1->children->children->content;
+        table[index] = malloc(strlen(temp));
+        table[index] = temp;
+
+        index++;
+    }
 
     /* free stuff! $0.00 */
     xmlFreeDoc(doc);

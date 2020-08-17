@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-    #include <zip.h>
+#include <zip.h>
 
-    char **string_table(zip_t *archive);
+char **string_table(zip_t *archive);
 
 #ifdef __cplusplus
 }

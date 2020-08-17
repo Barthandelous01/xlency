@@ -7,14 +7,14 @@
 extern "C" {
 #endif
 
-    typedef struct coord {
-        char *x;
-        int y;
-    } coord_t;
+typedef struct coord {
+    char *x;
+    int y;
+} coord_t;
 
-    struct coord *parse_coord (char *name);
+struct coord *parse_coord (char *name);
 
-    int *range_int (size_t start, size_t end);
+int *range_int (size_t start, size_t end);
 
 #ifdef __cplusplus
 }

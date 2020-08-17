@@ -2,6 +2,7 @@
 #include <zip.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <string.h>
 #include <config.h>
 
 #include "xml.h"
@@ -39,15 +40,14 @@ OPTIONS:\n\
 int main(int argc, char **argv)
 {
 	static struct option longopts[] = {
-	{"version", no_argument, NULL, 'V'},
-	{"help", no_argument, NULL, 'h'},
-	{"xml", no_argument, NULL, 'x'},
-	{"file", required_argument, NULL, 'f'},
-	{"outfile", required_argument, NULL, 'o'},
-	{"start", required_argument, NULL, 's'},
-	{"end", required_argument, NULL, 'e'},
-	{"sheet", required_argument, NULL, 'S'}
-};
+	    {"version", no_argument, NULL, 'V'},
+	    {"help", no_argument, NULL, 'h'},
+	    {"file", required_argument, NULL, 'f'},
+	    {"outfile", required_argument, NULL, 'o'},
+	    {"start", required_argument, NULL, 's'},
+	    {"end", required_argument, NULL, 'e'},
+	    {"sheet", required_argument, NULL, 'S'}
+    };
 
 	/* local pseudo-global variables */
 	char *start = "A1";
@@ -57,6 +57,7 @@ int main(int argc, char **argv)
 	char *outfile = "stdout";
 	int errp = 0;
 	zip_t *archive;
+	char **table;
 
 	/* arg parsing */
 	int ch = 0;
@@ -84,7 +85,7 @@ int main(int argc, char **argv)
 							"Unable to open file ", optarg, errp);
 					exit(-1);
 				}
-				string_table(archive);
+				table = string_table(archive);
 				break;
 			case 'x':
 				xml = 1;
@@ -102,4 +103,3 @@ int main(int argc, char **argv)
 	}
 	return 0;
 }
-	

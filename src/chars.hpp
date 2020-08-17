@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-    char **sequence(char *start, char *end);
+char **sequence(char *start, char *end);
 
 #ifdef __cplusplus
 }
