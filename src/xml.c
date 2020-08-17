@@ -28,15 +28,16 @@ char **string_table(zip_t *archive)
     zip_fread(file, contents, st.size);
 
     /* let the XML begin! */
-    doc = xmlReadMemory(contents, st.size, "sst", NULL, NULL);
+    doc = xmlReadMemory(contents, st.size, "sst", NULL, 0);
     root = xmlDocGetRootElement(doc);
-    fprintf(stderr, "%s\n", root->name);
 
+    /* start of allocating for string table */
+    int count = atoi(root->properties->next->children->content);
+    char **table = malloc(sizeof(char *) * count);
 
     /* free stuff! $0.00 */
     xmlFreeDoc(doc);
 
     /* boilerplate */
-    char **x;
-    return x;
+    return table;
 }

@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include <config.h>
 
+#include "xml.h"
+
 void version()
 {
 	printf("%s", PACKAGE_STRING "\nCopyright (C) 2020 Barthandelous01\n\
@@ -58,7 +60,7 @@ int main(int argc, char **argv)
 
 	/* arg parsing */
 	int ch = 0;
-	while ((ch = getopt_long(argc, argv, "VShxr:o:s:e:", longopts, NULL)) != -1) {
+	while ((ch = getopt_long(argc, argv, "VShxr:o:s:e:f:", longopts, NULL)) != -1) {
 		switch (ch) {
 			case 'V':
 				version();
@@ -80,7 +82,9 @@ int main(int argc, char **argv)
 				if (errp != 0) {
 					fprintf(stderr, "%s%s: error code %d\n",
 							"Unable to open file ", optarg, errp);
-				} exit(-1);
+					exit(-1);
+				}
+				string_table(archive);
 				break;
 			case 'x':
 				xml = 1;
