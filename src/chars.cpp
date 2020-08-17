@@ -185,7 +185,7 @@ static int char_to_value(char n)
     }
 }
 
-static int row_to_int(char *col)
+extern "C" int row_to_int(char *col)
 {
     std::string column = col;
     std::reverse(column.begin(), column.end());
@@ -219,9 +219,25 @@ static char *int_to_row (int column)
 
 extern "C" char **sequence (char *start, char *end)
 {
-    std::vector<char *> x;
+    int start_i = row_to_int(start);
+    int end_i = row_to_int(end);
+
+    char **y = (char **)malloc(end_i - start_i + 1);
+    for (int i = start_i; i <= end_i; i++) {
+        y[i - start_i] = (char *)malloc(std::strlen(int_to_row(i)));
+        std::strcpy(y[i - start_i], int_to_row(i));
+        std::printf("%d    %s\n", i, int_to_row(i));
+    }
+    std::printf("\n\n\n");
+
+    return y;
+
+    /*std::vector<char *> x;
     for(int y = row_to_int(start); y <= row_to_int(end); y++) {
         x.push_back(int_to_row(y));
     }
-    return &x[0];
+
+    char **y = (char *)malloc(x.size() + 1);
+    std::copy(x.begin, x.end, y);
+    return y; */
 }

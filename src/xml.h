@@ -7,8 +7,11 @@ extern "C" {
 
 #include <zip.h>
 
+#include "xl.h"
+
 char **string_table(zip_t *archive);
 char *sheet_file(zip_t *archive, char *sheet_name);
+char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end);
 
 #ifdef __cplusplus
 }

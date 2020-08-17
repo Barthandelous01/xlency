@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-char **sequence(char *start, char *end);
+char **sequence (char *start, char *end);
+int row_to_int (char *col);
 
 #ifdef __cplusplus
 }

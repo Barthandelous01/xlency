@@ -5,8 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <xl.h>
-#include <chars.hpp>
+#include "xl.h"
+#include "chars.hpp"
 
 static char *zip_read(zip_t *archive, char *name, int *size)
 {
@@ -97,7 +97,7 @@ char *sheet_file(zip_t *archive, char *sheet_name)
     return buff;
 }
 
-char *export_csv(zip_t *archive, char *sheet_file, coord_t start, coord_t end)
+char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end)
 {
     xmlDoc *doc;
     xmlNode *root, *node1, *node2, *node3;
@@ -105,8 +105,21 @@ char *export_csv(zip_t *archive, char *sheet_file, coord_t start, coord_t end)
     int size;
     char *contents = zip_read(archive, sheet_file, &size);
 
+    int *y = range_int(start->y, end->y);
+    int len_y = end->y - start->y + 1;
+    char **x = sequence(start->x, end->x);
+    int len_x = row_to_int(end->x) - row_to_int(start->x) + 1;
+
+    for (int count_x = 0; count_x < len_x; count_x++) {
+        for (int count_y = 0; count_y < len_y; count_y++) {
+            printf("%s%d\n", x[count_x], y[count_y]);
+        }
+    }
+
     /* free & return */
-    free(contents);
-    xmlFreeDoc(doc);
+    //free(x);
+    //free (y);
+    //free(contents);
+    //xmlFreeDoc(doc);
     return "";
 }

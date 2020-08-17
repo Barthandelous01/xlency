@@ -96,5 +96,6 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
+	export_csv(archive, sheet_file(archive, sheet), parse_coord(start), parse_coord(end));
 	return 0;
 }
