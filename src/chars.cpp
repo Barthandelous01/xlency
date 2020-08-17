@@ -222,22 +222,10 @@ extern "C" char **sequence (char *start, char *end)
     int start_i = row_to_int(start);
     int end_i = row_to_int(end);
 
-    char **y = (char **)malloc(end_i - start_i + 1);
+    char **y = new char *[(end_i - start_i)*4];
     for (int i = start_i; i <= end_i; i++) {
-        y[i - start_i] = (char *)malloc(std::strlen(int_to_row(i)));
+        y[i - start_i] = new char[std::strlen(int_to_row(i))];
         std::strcpy(y[i - start_i], int_to_row(i));
-        std::printf("%d    %s\n", i, int_to_row(i));
     }
-    std::printf("\n\n\n");
-
     return y;
-
-    /*std::vector<char *> x;
-    for(int y = row_to_int(start); y <= row_to_int(end); y++) {
-        x.push_back(int_to_row(y));
-    }
-
-    char **y = (char *)malloc(x.size() + 1);
-    std::copy(x.begin, x.end, y);
-    return y; */
 }

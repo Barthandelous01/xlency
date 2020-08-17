@@ -105,21 +105,33 @@ char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end)
     int size;
     char *contents = zip_read(archive, sheet_file, &size);
 
+    char buff[40];
+
     int *y = range_int(start->y, end->y);
     int len_y = end->y - start->y + 1;
     char **x = sequence(start->x, end->x);
     int len_x = row_to_int(end->x) - row_to_int(start->x) + 1;
 
+    /* xml boilerplate */
+    doc = xmlReadMemory(contents, size, "worksheet", NULL, 0);
+    root = xmlDocGetRootElement(doc);
+    for (node1 = root->children; (node1 != NULL) && (xmlStrcmp(node1->name, (xmlChar *)"sheetData")); node1 = node1->next);
+
+    printf("%s\n", node1->name);
+
     for (int count_x = 0; count_x < len_x; count_x++) {
         for (int count_y = 0; count_y < len_y; count_y++) {
-            printf("%s%d\n", x[count_x], y[count_y]);
+            ;
         }
     }
 
     /* free & return */
-    //free(x);
-    //free (y);
-    //free(contents);
-    //xmlFreeDoc(doc);
+    for (int i = 0; i < len_x; i++) {
+        free(x[i]);
+    }
+    free(x);
+    free (y);
+    free(contents);
+    xmlFreeDoc(doc);
     return "";
 }

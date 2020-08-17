@@ -4,9 +4,14 @@
 #include <getopt.h>
 #include <string.h>
 #include <config.h>
+#include <signal.h>
 
 #include "xml.h"
 
+static void catch_function(int signo)
+{
+	;
+}
 void version()
 {
 	printf("%s", PACKAGE_STRING "\nCopyright (C) 2020 Barthandelous01\n\
@@ -38,6 +43,7 @@ OPTIONS:\n\
 /* main */
 int main(int argc, char **argv)
 {
+	signal(SIGABRT, catch_function);
 	static struct option longopts[] = {
 	    {"version", no_argument, NULL, 'V'},
 	    {"help", no_argument, NULL, 'h'},
@@ -96,6 +102,6 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
-	export_csv(archive, sheet_file(archive, sheet), parse_coord(start), parse_coord(end));
-	return 0;
+	char *x = export_csv(archive, sheet_file(archive, sheet), parse_coord(start), parse_coord(end));
+	exit(0);
 }
