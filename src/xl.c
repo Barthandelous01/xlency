@@ -67,7 +67,7 @@ int *range_int (size_t start, size_t end)
 {
     size_t length = end - start + 1;
     int *ret = malloc(length * sizeof(int));
-    for (size_t i = start; i <= end; ++i) {
+    for (size_t i = start; i <= end+1; ++i) {
         ret[i - start] = i;
     }
     return ret;
