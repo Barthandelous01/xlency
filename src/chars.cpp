@@ -1,7 +1,6 @@
 #include <cstring>
 #include <string>
 #include <cmath>
-#include <bits/stdc++.h>
 #include <vector>
 
 /*
