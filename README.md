@@ -23,7 +23,11 @@ sudo pacman -S libxml2
 Once those are installed, clone the repo, and move into the directory, and set up the autotools. Alternately, download a tarball. Then run:
 ```bash
 ./configure
-make [-j#]
+make
 sudo make install
 ```
-
+## Inspiration
+This project was inspired by an idea I had while building [`redocx`](https://github.com/Barthandelous01/redocx).
+I thought, if I can build an extractor for Word, why not build one for Excel, and PowerPoint, too? Well, as it
+turns out, Excel is by far the most complicated of the three to work with. I leave it to the reader to explore
+the xml parsing code, found in `src/xml.c`. Thus, this project was left on the back burner for a long time. However, I finally persuaded myself to finish it.
