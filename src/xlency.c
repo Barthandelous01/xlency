@@ -62,6 +62,7 @@ int main(int argc, char **argv)
 	int errp = 0;
 	zip_t *archive;
 	char **table;
+	FILE *out;
 
 	/* arg parsing */
 	int ch = 0;
@@ -102,6 +103,11 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
-	char *x = export_csv(archive, sheet_file(archive, sheet), parse_coord(start), parse_coord(end));
+	if (strcmp(outfile, "stdout") == 0)
+		out = stdout;
+	else {
+		out = fopen(outfile, "w");
+	}
+	char *x = export_csv(archive, sheet_file(archive, sheet), parse_coord(start), parse_coord(end), out, table);
 	exit(0);
 }

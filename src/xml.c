@@ -47,9 +47,9 @@ char **string_table(zip_t *archive)
     int index = 0;
     char *temp;
     for (node1 = root->children; node1 != NULL; node1 = node1->next) {
-        temp = node1->children->children->content;
+        temp = (char *)xmlNodeGetContent(node1->children);
         table[index] = malloc(strlen(temp));
-        table[index] = temp;
+        strcpy(table[index], temp);
 
         index++;
     }
@@ -97,7 +97,8 @@ char *sheet_file(zip_t *archive, char *sheet_name)
     return buff;
 }
 
-char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end)
+char *export_csv(zip_t *archive, char *sheet_file,
+                 coord_t *start, coord_t *end, FILE *fp, char **table)
 {
     xmlDoc *doc;
     xmlNode *root, *node1, *node2, *node3;
@@ -106,6 +107,7 @@ char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end)
     char *contents = zip_read(archive, sheet_file, &size);
 
     char buff[40];
+    char digit[20];
 
     int *y = range_int(start->y, end->y);
     int len_y = end->y - start->y + 1;
@@ -115,13 +117,47 @@ char *export_csv(zip_t *archive, char *sheet_file, coord_t *start, coord_t *end)
     /* xml boilerplate */
     doc = xmlReadMemory(contents, size, "worksheet", NULL, 0);
     root = xmlDocGetRootElement(doc);
+    char *key;
     for (node1 = root->children; (node1 != NULL) && (xmlStrcmp(node1->name, (xmlChar *)"sheetData")); node1 = node1->next);
 
-    printf("%s\n", node1->name);
-
+    int found = 0;
     for (int count_x = 0; count_x < len_x; count_x++) {
         for (int count_y = 0; count_y < len_y; count_y++) {
-            ;
+            sprintf(buff, "%s%d", x[count_x], y[count_y]);
+            sprintf(digit, "%d", y[count_y]);
+            for (node2 = node1->children; (node2 != NULL) && (xmlStrcmp(node2->properties->children->content, (xmlChar *)digit) == 0); node2 = node2->next) {
+                found = 0;
+                for (node3 = node2->children; node3 != NULL; node3 = node3->next) {
+                    if (xmlStrcmp(node3->properties->children->content, (xmlChar *)buff) == 0) {
+                        found = 1;
+                        if ((node3->properties->next != NULL)) {
+                            if (xmlStrcmp(node3->properties->next->children->content, (xmlChar *)"s") == 0) {
+                                key = (char *)xmlNodeGetContent(node3->children);
+                                if (count_x != len_x) {
+                                    fprintf(fp, "%s,", table[atoi(key)]);
+                                } else {
+                                    fprintf(fp, "%s\n", table[atoi(key)]);
+                                }
+                            }
+                        } else {
+                            key = (char *)xmlNodeGetContent(node3->children);
+                            if (count_x != len_x) {
+                                fprintf(fp, "%d,", key);
+                            } else {
+                                fprintf(fp, "%d\n", key);
+                            }
+                            xmlFree(key);
+                        }
+                    }
+                }
+                if (found == 0) {
+                    if (count_x != len_x)
+                        fprintf(fp, "%s", ",");
+                    else
+                        fprintf(fp, "%s\n", ",");
+                }
+                fflush(stdout);
+            }
         }
     }
 
