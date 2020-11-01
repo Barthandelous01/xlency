@@ -97,8 +97,20 @@ char *sheet_file(zip_t *archive, char *sheet_name)
     return buff;
 }
 
+static inline xmlNode *next_node_by_name (char *name, xmlNode *node)
+{
+  xmlNode *node2;
+  for (node2 = node->children; (node2 != NULL) && (xmlStrcmp(node2->name, (xmlChar *)name)); node2 = node2->next)
+    ;
+   return node2;
+ }
+
+/*
+ * Despite the whole "no more than 7 things" rule, this is still understandable.
+ * It is, unfortunately, basically tree walking code that couldn't be genericed.
+ */
 char *export_csv(zip_t *archive, char *sheet_file,
-                 coord_t *start, coord_t *end, FILE *fp, char **table)
+		 coord_t *start, coord_t *end, FILE *fp, char **table)
 {
     xmlDoc *doc;
     xmlNode *root, *node1, *node2, *node3;
@@ -118,54 +130,58 @@ char *export_csv(zip_t *archive, char *sheet_file,
     doc = xmlReadMemory(contents, size, "worksheet", NULL, 0);
     root = xmlDocGetRootElement(doc);
     char *key;
-    for (node1 = root->children; (node1 != NULL) && (xmlStrcmp(node1->name, (xmlChar *)"sheetData")); node1 = node1->next);
+    node1 = next_node_by_name ("sheetData", root);
 
     int found = 0;
+    // counter loops from x to y
     for (int count_y = 0; count_y < len_y; count_y++) {
-        for (int count_x = 0; count_x < len_x; count_x++) {
-            node2 = node1->children;
-            sprintf(buff, "%s%d", x[count_x], y[count_y]);
-            sprintf(digit, "%d", y[count_y]);
-            for (node2 = node1->children; (node2 != NULL); node2 = node2->next) {
-                if (xmlStrcmp(node2->properties->children->content, (xmlChar *)digit) != 0)
-                    continue;
-                found = 0;
-                for (node3 = node2->children; node3 != NULL; node3 = node3->next) {
-                    if (xmlStrcmp(node3->properties->children->content, (xmlChar *)buff) == 0) {
-                        found = 1;
-                        if ((node3->properties->next != NULL)) {
-                            if (xmlStrcmp(node3->properties->next->children->content, (xmlChar *)"s") == 0) {
-                                key = (char *)xmlNodeGetContent(node3->children);
-                                if (count_x != len_x - 1) {
-                                    fprintf(fp, "%s,", table[atoi(key)]);
-                                } else {
-                                    fprintf(fp, "%s\n", table[atoi(key)]);
-                                }
-                                xmlFree(key);
-                                continue;
-                            }
-                        } else {
-                            key = (char *)xmlNodeGetContent(node3->children);
-                            if (count_x != len_x - 1) {
-                                fprintf(fp, "%s,", key);
-                            } else {
-                                fprintf(fp, "%s\n", key);
-                            }
-                            xmlFree(key);
-                            continue;
-                        }
-                    }
-                }
-                if (found == 0) {
-                    if (count_x != len_x - 1)
-                        fprintf(fp, "%s", ",");
-                    else
-                        fprintf(fp, "%s\n", ",");
-                }
-                fflush(stdout);
-                break;
-            }
-        }
+      for (int count_x = 0; count_x < len_x; count_x++) {
+	// The xml is structured so that I need to move to the next node already.
+	node2 = node1->children;
+
+	// set up buffers
+	sprintf(buff, "%s%d", x[count_x], y[count_y]);
+	sprintf(digit, "%d", y[count_y]);
+	for (node2 = node1->children; (node2 != NULL); node2 = node2->next) {
+	  if (xmlStrcmp(node2->properties->children->content, (xmlChar *)digit) != 0)
+	    continue;
+	  found = 0;
+	  for (node3 = node2->children; node3 != NULL; node3 = node3->next) {
+	    if (xmlStrcmp(node3->properties->children->content, (xmlChar *)buff) == 0) {
+	      found = 1;
+	      if ((node3->properties->next != NULL)) {
+		if (xmlStrcmp(node3->properties->next->children->content, (xmlChar *)"s") == 0) {
+		  key = (char *)xmlNodeGetContent(node3->children);
+		  if (count_x != len_x - 1) {
+		    fprintf(fp, "%s,", table[atoi(key)]);
+		  } else {
+		    fprintf(fp, "%s\n", table[atoi(key)]);
+		  }
+		  xmlFree(key);
+		  continue;
+		}
+	      } else {
+		key = (char *)xmlNodeGetContent(node3->children);
+		if (count_x != len_x - 1) {
+		  fprintf(fp, "%s,", key);
+		} else {
+		  fprintf(fp, "%s\n", key);
+		}
+		xmlFree(key);
+		continue;
+	      }
+	    }
+	  }
+	  if (found == 0) {
+	    if (count_x != len_x - 1)
+	      fprintf(fp, "%s", ",");
+	    else
+	      fprintf(fp, "%s\n", ",");
+	  }
+	  fflush(stdout);
+	  break;
+	}
+      }
     }
 
     /* free & return */
